@@ -1,22 +1,84 @@
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import java.io.*;
-
 
 
 public class Dictionary {
 
     public static BiMap <String, String> dictionary = HashBiMap.create();
     public final String dataPath;
+    public final String tempDataPath; // used for DeleteFromFile function
 
     public Dictionary() {
         dataPath = "./dictionary.txt";
+        tempDataPath = "./temp_dictionary.txt";
         LoadDictionaryData();
     }
-    public Dictionary(String filePath) {
+    public Dictionary(String filePath, String tempDataPath) {
         dataPath = filePath;
+        this.tempDataPath = tempDataPath;
         LoadDictionaryData();
+    }
+
+    public void WriteToFile(String line)
+    {
+        try
+        {
+            FileWriter fw = new FileWriter("dictionary.txt", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(line);
+            bw.newLine();
+            bw.close();
+            fw.close();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void DeleteFromFile(String word) {
+        try {
+            FileInputStream file = new FileInputStream(dataPath);
+            BufferedReader br = new BufferedReader(new InputStreamReader(file));
+            FileWriter fw = new FileWriter("temp_dictionary.txt", false);
+            BufferedWriter bw = new BufferedWriter(fw);
+            String line = null;
+            while((line = br.readLine()) != null)
+            {
+                String[] tempContainer = line.split(";");
+                if (tempContainer[0].equals(word) || tempContainer[1].equals(word))
+                {
+                    continue;
+                }
+                else
+                {
+                    bw.write(line);
+                    bw.newLine();
+                }
+            }
+            bw.close();
+            br.close();
+            file.close();
+            fw.close();
+        } catch (FileNotFoundException fnf) {
+            System.out.println("Cannot find the specified database: " + dataPath);
+            System.err.println(fnf.getMessage());
+        } catch (IOException ioException){
+            ioException.printStackTrace();
+        }
+
+        try
+        {
+            //Delete file
+            Files.deleteIfExists(Paths.get(dataPath));
+            //Rename file
+            Files.move(Paths.get(tempDataPath),Paths.get(dataPath));
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
     }
 
     public void LoadDictionaryData() {
@@ -29,8 +91,8 @@ public class Dictionary {
                 String[] tempContainer = currentLine.split(";");
                 if (IsValidWordPair(tempContainer)) {
                     try {
-                        // Viet - Eng
-                        dictionary.put(tempContainer[1], tempContainer[0]); // inverse bi-map
+                        //Eng-Vn
+                        dictionary.put(tempContainer[0], tempContainer[1]); // inverse bi-map
                     } catch (IllegalArgumentException iae) {
                         System.out.println("Skipped a duplicated pair");
                         System.err.println(iae.getMessage());
@@ -39,6 +101,8 @@ public class Dictionary {
                     System.out.println("Skipped an invalid word pair");
                 }
             }
+            file.close();
+            br.close();
         } catch (FileNotFoundException fnf) {
             System.out.println("Cannot find the specified database: " + dataPath);
             System.err.println(fnf.getMessage());
@@ -122,9 +186,14 @@ public class Dictionary {
     }
 
     public static void main(String[] args){
+        /*
         Dictionary dictionary = new Dictionary();
         String input = "DEL;b";
         String processedInput = dictionary.HandleInput(input);
         System.out.println(processedInput);
+        */
+
+        Dictionary dictionary = new Dictionary();
+        dictionary.DeleteFromFile("assault rifle");
     }
 }
