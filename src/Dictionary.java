@@ -12,14 +12,14 @@ public class Dictionary {
 
     public Dictionary() {
         dataPath = "./dictionary.txt";
-        loadDictionaryData();
+        LoadDictionaryData();
     }
     public Dictionary(String filePath) {
         dataPath = filePath;
-        loadDictionaryData();
+        LoadDictionaryData();
     }
 
-    public void loadDictionaryData() {
+    public void LoadDictionaryData() {
         try {
             FileInputStream file = new FileInputStream(dataPath);
             BufferedReader br = new BufferedReader (new InputStreamReader(file));
@@ -27,7 +27,7 @@ public class Dictionary {
             String currentLine;
             while ((currentLine = br.readLine()) != null){
                 String[] tempContainer = currentLine.split(";");
-                if (isValidWordPair(tempContainer)) {
+                if (IsValidWordPair(tempContainer)) {
                     try {
                         // Viet - Eng
                         dictionary.put(tempContainer[1], tempContainer[0]); // inverse bi-map
@@ -48,15 +48,15 @@ public class Dictionary {
         }
     }
 
-    public static boolean isValidWordPair(String[] wordPair) {
+    public static boolean IsValidWordPair(String[] wordPair) {
         if (wordPair.length != 2) {
             return false;
         }
-        return !normalizeSpaces(wordPair[0]).isEmpty()
-                && !normalizeSpaces(wordPair[1]).isEmpty();
+        return !NormalizeSpaces(wordPair[0]).isEmpty()
+                && !NormalizeSpaces(wordPair[1]).isEmpty();
     }
 
-    public String lookUp (String word){
+    public String LookUp (String word){
         if (dictionary.get(word) != null){
             return dictionary.get(word);
         } else if (dictionary.inverse().get(word) != null){
@@ -66,9 +66,9 @@ public class Dictionary {
         }
     }
 
-    public String handleInput(String input) {
+    public String HandleInput(String input) {
         // pre-processing
-        input = normalizeSpaces(input);
+        input = NormalizeSpaces(input);
         input = input.toLowerCase();
 
         // command check
@@ -113,10 +113,10 @@ public class Dictionary {
             }
         }
 
-        return lookUp(input);
+        return LookUp(input);
     }
 
-    public static String normalizeSpaces(String text){
+    public static String NormalizeSpaces(String text){
 
         return text.trim().replaceAll(" +", " ");
     }
@@ -124,7 +124,7 @@ public class Dictionary {
     public static void main(String[] args){
         Dictionary dictionary = new Dictionary();
         String input = "DEL;b";
-        String processedInput = dictionary.handleInput(input);
+        String processedInput = dictionary.HandleInput(input);
         System.out.println(processedInput);
     }
 }
