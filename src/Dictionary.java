@@ -23,6 +23,11 @@ public class Dictionary {
         LoadDictionaryData();
     }
 
+    public BiMap <String, String> GetBiMap()
+    {
+        return dictionary;
+    }
+
     public void WriteToFile(String line)
     {
         try
@@ -92,7 +97,7 @@ public class Dictionary {
                 if (IsValidWordPair(tempContainer)) {
                     try {
                         //Eng-Vn
-                        dictionary.put(tempContainer[0], tempContainer[1]); // inverse bi-map
+                        dictionary.put(tempContainer[0], tempContainer[1]);
                     } catch (IllegalArgumentException iae) {
                         System.out.println("Skipped a duplicated pair");
                         System.err.println(iae.getMessage());
@@ -130,7 +135,7 @@ public class Dictionary {
         }
     }
 
-    public String HandleInput(String input) {
+    public String HandleInput(BiMap <String, String> dictionary,String input) {
         // pre-processing
         input = NormalizeSpaces(input);
         input = input.toLowerCase();
@@ -148,8 +153,16 @@ public class Dictionary {
                     if (!separate[1].isEmpty()
                         && !separate[2].isEmpty()) {
                         // check if duplicated pair and add
-                        System.out.println("adding");
-                        return "added";
+                        if (!dictionary.containsKey(separate[1]) || !dictionary.containsValue(separate[2]))
+                        {
+                            dictionary.put(separate[1],separate[2]);
+                            this.WriteToFile(separate[1] + ";" + separate[2]);
+                            return "Add Completed";
+                        }
+                        else
+                        {
+                            return  "Word existed";
+                        }
                     } else {
                         return "Invalid add command.\nEg: ADD;apple;tao";
                     }
@@ -163,9 +176,14 @@ public class Dictionary {
                 // separate[1]: word
                 if (separate[0].equals("del")) {
                     if (!separate[1].isEmpty()) {
-                        // check if existed and del
-                        System.out.println("Deleting");
-                        return "deleted";
+                        if(dictionary.containsKey(separate[1]) || dictionary.containsValue(separate[1]))
+                        {
+                            dictionary.remove(separate[1]);
+                            DeleteFromFile(separate[1]);
+                            return "Delete Completed";
+                        }
+
+
                     } else {
                         return "Invalid delete command.\nEg: DEL;apple";
                     }
@@ -176,8 +194,7 @@ public class Dictionary {
                 return "Invalid input. A word shouldn't contain ';'";
             }
         }
-
-        return LookUp(input);
+        return  "Something went wrong";
     }
 
     public static String NormalizeSpaces(String text){
@@ -186,14 +203,10 @@ public class Dictionary {
     }
 
     public static void main(String[] args){
-        /*
-        Dictionary dictionary = new Dictionary();
-        String input = "DEL;b";
-        String processedInput = dictionary.HandleInput(input);
-        System.out.println(processedInput);
-        */
 
         Dictionary dictionary = new Dictionary();
-        dictionary.DeleteFromFile("assault rifle");
+        String input = "DEL;boomstick";
+        String processedInput = dictionary.HandleInput(dictionary.GetBiMap(),input);
+        System.out.println(processedInput);
     }
 }
