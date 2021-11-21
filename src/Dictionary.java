@@ -23,6 +23,11 @@ public class Dictionary {
         LoadDictionaryData();
     }
 
+    public BiMap <String, String> GetBiMap()
+    {
+        return  dictionary;
+    }
+
     public int WriteToFile(String line)
     {
         try
@@ -37,6 +42,30 @@ public class Dictionary {
         } catch (IOException e){
             e.printStackTrace();
             return 0; // write failed
+        }
+    }
+
+    public int WriteToFile(BiMap<String, String> dictionary)
+    {
+        try
+        {
+            FileWriter fw = new FileWriter("./test_dic.txt", false);
+            BufferedWriter bw = new BufferedWriter(fw);
+            for (var entry : dictionary.entrySet())
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append(entry.getKey());
+                stringBuilder.append(";");
+                stringBuilder.append(entry.getValue());
+                bw.write(stringBuilder.toString());
+                bw.newLine();
+            }
+            bw.close();
+            fw.close();
+            return  1;
+        } catch (IOException ioException){
+            ioException.printStackTrace();
+            return 0;
         }
     }
 
@@ -194,6 +223,7 @@ public class Dictionary {
                         // check if existed and del
                         if (dictionary.containsKey(separate[1])) {
                             // exists
+                            dictionary.remove(separate[1]);
                             int returnCode = DeleteFromFile(separate[1]);
                             if (returnCode == 1) {
                                 return "Successfully deleted";
@@ -235,8 +265,6 @@ public class Dictionary {
 
     public static void main(String[] args){
         Dictionary dictionary = new Dictionary();
-        String input = "ADD ; ; asdasd";
-        String processedInput = dictionary.HandleInput(input);
-        System.out.println(processedInput);
+        System.out.println(dictionary.WriteToFile(dictionary.GetBiMap()));
     }
 }
