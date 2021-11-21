@@ -157,7 +157,7 @@ public class Dictionary {
         } else if (dictionary.inverse().get(word) != null){
             return dictionary.inverse().get(word);
         } else {
-            return "Cannot find " + word + " in our dictionary.";
+            return "Cannot find <" + word + "> in our dictionary.";
         }
     }
 
@@ -261,10 +261,5 @@ public class Dictionary {
         }
 
         return count;
-    }
-
-    public static void main(String[] args){
-        Dictionary dictionary = new Dictionary();
-        System.out.println(dictionary.WriteToFile(dictionary.GetBiMap()));
     }
 }

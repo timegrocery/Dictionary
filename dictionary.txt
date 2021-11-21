@@ -1,6 +1,12 @@
-submachine gun;súng tiểu liên
-witcher;thợ săn quái vật
-hammer;búa
-sickle;liềm
-exploding blood;bộc huyết
-a song of ice and fire;bài ca của băng và lửa
+apple;táo
+banana;chuối
+orange;cam
+yellow;vàng
+red;đỏ
+keep on;tiếp tục
+move;di chuyển
+spicy;cay
+phone;điện thoại
+home;nhà
+forever;mãi mãi
+dragon;rồng
